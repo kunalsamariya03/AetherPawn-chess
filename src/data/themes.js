@@ -2,8 +2,6 @@
 //  - frameClass: Tailwind classes for the wrapper div that frames the board
 //  - boardStyle: inline style object passed to react-chessboard's customBoardStyle
 //  - lightSquareStyle / darkSquareStyle: inline style objects for the squares
-//    (react-chessboard requires plain style objects here, so the hex values below
-//    are the literal values behind their Tailwind-token equivalents, noted in comments)
 //  - accentGlow: Tailwind shadow class used to tint the turn indicator / UI glows to match
 
 export const BOARD_THEMES = {
@@ -17,7 +15,6 @@ export const BOARD_THEMES = {
       borderRadius: '12px',
       boxShadow: 'inset 0 1px 1px rgba(255,255,255,0.2), 0 10px 30px rgba(0,0,0,0.5)',
     },
-    // light: frosted bright white glass | dark: deep charcoal obsidian glass
     lightSquareStyle: { backgroundColor: 'rgba(240, 240, 245, 0.88)' },
     darkSquareStyle: { backgroundColor: 'rgba(20, 22, 28, 0.92)' },
     accentGlow: 'shadow-[0_0_20px_rgba(255,255,255,0.25)]',
@@ -34,7 +31,6 @@ export const BOARD_THEMES = {
       borderRadius: '12px',
       boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.08)',
     },
-    // light: slate-100/70 tinted cyan | dark: slate-800/60 tinted cyan
     lightSquareStyle: { backgroundColor: 'rgba(226,232,240,0.85)' },
     darkSquareStyle: { backgroundColor: 'rgba(45,64,82,0.92)' },
     accentGlow: 'shadow-glow-blue',
@@ -51,36 +47,29 @@ export const BOARD_THEMES = {
       borderRadius: '4px',
       boxShadow: 'inset 0 0 12px rgba(0,0,0,0.45)',
     },
-    // light: amber-100 wood | dark: deep walnut brown
     lightSquareStyle: { backgroundColor: '#ead9b4' },
     darkSquareStyle: { backgroundColor: '#6b3f22' },
     accentGlow: 'shadow-glow',
     accentText: 'text-brass-400',
     accentRing: 'ring-brass-500/40',
   },
-  neon: {
-    id: 'neon',
-    label: 'Futuristic Neon',
-    blurb: 'Circuit-etched, high voltage',
-    frameClass: 'bg-black border border-neon-cyan/30 shadow-2xl shadow-neon-cyan/20 rounded-2xl p-1 md:p-4',
-    // Grid backdrop is expressed as an inline style (not a Tailwind arbitrary
-    // class) since it contains raw spaces/commas that Tailwind's class
-    // parser can't tokenize safely.
-    frameStyle: {
-      backgroundImage:
-        'linear-gradient(rgba(62,242,208,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(62,242,208,0.06) 1px, transparent 1px)',
-      backgroundSize: '16px 16px',
-    },
+  // 👇 NEON HATA DIYA, YAHAN GOLD/SILVER THEME AAGAYI 👇
+  luxuryGold: {
+    id: 'luxuryGold',
+    label: 'Royal Gold & Silver',
+    blurb: 'Luxurious metallic finish with gold accents',
+    // Gold gradient frame with a subtle metallic shine
+    frameClass: 'bg-gradient-to-br from-[#bf953f] via-[#fcf6ba] to-[#b38728] border-2 border-[#fbf5b7] shadow-2xl shadow-yellow-600/30 rounded-2xl p-1 md:p-4',
     boardStyle: {
       borderRadius: '10px',
-      boxShadow: '0 0 30px rgba(62,242,208,0.15)',
+      boxShadow: 'inset 0 0 20px rgba(0,0,0,0.4), 0 5px 15px rgba(179,135,40,0.2)',
     },
-    // light: near-black graphite | dark: deep violet
-    lightSquareStyle: { backgroundColor: '#12141c' },
-    darkSquareStyle: { backgroundColor: '#241a3d' },
-    accentGlow: 'shadow-[0_0_24px_-2px_rgba(62,242,208,0.6)]',
-    accentText: 'text-neon-cyan',
-    accentRing: 'ring-neon-cyan/40',
+    // light: Shiny Silver | dark: Rich Brushed Gold
+    lightSquareStyle: { backgroundColor: '#e2e4e6' }, 
+    darkSquareStyle: { backgroundColor: '#c5a059' }, 
+    accentGlow: 'shadow-[0_0_24px_-2px_rgba(218,165,32,0.7)]',
+    accentText: 'text-yellow-600',
+    accentRing: 'ring-yellow-500/60',
   },
 };
 
@@ -98,9 +87,19 @@ export const PIECE_STYLES = {
 };
 
 export const DEFAULT_SETTINGS = {
-  boardTheme: 'wood',
+  boardTheme: 'luxuryGold', // Maine by default isko Gold par set kar diya hai!
   pieceStyle: 'glossy',
   boardOrientation: 'white',
   clockEnabled: false,
   clockMinutes: 10,
+  mode: 'local', 
+  aiDifficulty: 'medium', 
+  humanColor: 'w', 
+  soundEnabled: true,
 };
+
+export const AI_DIFFICULTIES = [
+  { id: 'easy', label: 'Easy', blurb: 'Fast, makes real mistakes' },
+  { id: 'medium', label: 'Medium', blurb: 'Solid tactical lookahead' },
+  { id: 'hard', label: 'Hard', blurb: 'Deep, punishing evaluation' },
+];

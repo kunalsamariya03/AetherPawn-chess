@@ -3,10 +3,9 @@ import CapturedPieces from './CapturedPieces.jsx';
 import MoveHistory from './MoveHistory.jsx';
 import Controls from './Controls.jsx';
 import ClockPanel from './ClockPanel.jsx';
-import ThemeSelector from './ThemeSelector.jsx';
 import AdPanel from './AdPanel.jsx';
 
-export default function Sidebar({ game, settings, onSettingsChange, onFlip, onNewGame, onTimeUp, clockResetSignal }) {
+export default function Sidebar({ game, settings, onSettingsChange, onFlip, onNewGame, onTimeUp, clockResetSignal, aiTurnActive }) {
   return (
     <aside className="flex w-full max-w-sm flex-col gap-3 md:w-80">
       <div className="rounded-2xl border border-white/10 bg-ink-800/70 p-4">
@@ -20,7 +19,13 @@ export default function Sidebar({ game, settings, onSettingsChange, onFlip, onNe
 
       <MoveHistory history={game.history} pointer={game.pointer} onJump={game.jumpTo} />
 
-      <Controls game={game} onFlip={onFlip} onNewGame={onNewGame} />
+      <Controls
+        game={game}
+        onFlip={onFlip}
+        onNewGame={onNewGame}
+        flipDisabled={settings.mode === 'ai'}
+        undoRedoDisabled={aiTurnActive}
+      />
 
       <ClockPanel
         enabled={settings.clockEnabled}
@@ -31,8 +36,6 @@ export default function Sidebar({ game, settings, onSettingsChange, onFlip, onNe
         resetSignal={clockResetSignal}
         onTimeUp={onTimeUp}
       />
-
-      <ThemeSelector settings={settings} onChange={onSettingsChange} />
 
       <AdPanel />
     </aside>

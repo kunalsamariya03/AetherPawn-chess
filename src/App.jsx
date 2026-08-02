@@ -1,11 +1,12 @@
-import React, { useEffect, useState } from 'react';
-// Custom icon image import from src/assets/
-import customLogo from './assets/queen.webp'; 
+import React, { useEffect, useRef, useState } from 'react';
 
 import { useChessGame } from './hooks/useChessGame.js';
 import { useLocalStorage } from './hooks/useLocalStorage.js';
+import { useStockfishAI } from './hooks/useStockfishAI.js';
 import { DEFAULT_SETTINGS } from './data/themes.js';
 
+import Header from './components/Header.jsx';
+import SideDrawer from './components/SideDrawer.jsx';
 import Board from './components/Board.jsx';
 import Sidebar from './components/Sidebar.jsx';
 import TurnIndicator from './components/TurnIndicator.jsx';
@@ -13,10 +14,13 @@ import PromotionModal from './components/PromotionModal.jsx';
 import VictoryModal from './components/VictoryModal.jsx';
 
 export default function App() {
-  const game = useChessGame();
   const [settings, setSettings] = useLocalStorage('chess-ledger:settings', DEFAULT_SETTINGS);
+  const game = useChessGame({ soundEnabled: settings.soundEnabled });
+  const ai = useStockfishAI();
+
   const [result, setResult] = useState(null);
   const [clockResetSignal, setClockResetSignal] = useState(0);
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   const updateSettings = (patch) => setSettings((prev) => ({ ...prev, ...patch }));
 
@@ -29,11 +33,18 @@ export default function App() {
     setClockResetSignal((n) => n + 1);
   };
 
+  // Mode / side switches start a fresh game so the board and AI don't get confused mid-match
+  const handleModeChange = (patch) => {
+    updateSettings(patch);
+    handleNewGame();
+  };
+
   const handleTimeUp = (winner) => {
     if (result) return;
     setResult({ type: 'time', winner });
   };
 
+  // Detect checkmate / stalemate / draw only when viewing the live tip of the game
   useEffect(() => {
     if (!game.atTip) return;
     if (result) return;
@@ -43,41 +54,62 @@ export default function App() {
     else if (s.isDraw) setResult({ type: 'draw', winner: null });
   }, [game.atTip, game.status, result]);
 
+  // --- AI mode: whenever it's the engine's turn, ask Stockfish for a move and play it
+  const aiTurnActive =
+    settings.mode === 'ai' && game.atTip && !game.status.isGameOver && game.turn !== settings.humanColor;
+
+  const requestIdRef = useRef(0);
+  useEffect(() => {
+    if (!aiTurnActive || game.pendingPromotion) return undefined;
+    if (!ai.ready) return undefined;
+
+    const requestId = ++requestIdRef.current;
+    let cancelled = false;
+
+    ai.requestMove(game.fen, settings.aiDifficulty).then((uci) => {
+      if (cancelled || requestId !== requestIdRef.current || !uci) return;
+      const from = uci.slice(0, 2);
+      const to = uci.slice(2, 4);
+      const promotion = uci.length > 4 ? uci[4] : undefined;
+      game.applyEngineMove(from, to, promotion);
+    });
+
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [aiTurnActive, game.fen, settings.aiDifficulty, game.pendingPromotion, ai.ready]);
+
+  const effectiveOrientation =
+    settings.mode === 'ai' ? (settings.humanColor === 'w' ? 'white' : 'black') : settings.boardOrientation;
+
   return (
     <div className="min-h-screen px-3 py-4 md:px-8 md:py-8 flex flex-col items-center justify-start">
       <div className="w-full max-w-5xl flex flex-col items-center">
-        {/* Top Header Bar */}
-        <header className="w-full mb-4 flex items-center justify-start gap-3">
-          
-          {/* Glassmorphic Icon Container */}
-          <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-white/20 bg-white/10 p-2 shadow-lg backdrop-blur-xl transition-transform hover:scale-105">
-            <img 
-              src={customLogo} 
-              alt="Chess Logo" 
-              className="h-full w-full object-contain drop-shadow-[0_2px_4px_rgba(0,0,0,0.4)]"
-            />
-          </div>
+        <Header onOpenDrawer={() => setDrawerOpen(true)} />
 
-          <div>
-            <h1 className="font-display text-2xl font-bold tracking-wide text-parchment">AetherPawn</h1>
-            <p className="text-[10px] uppercase tracking-[0.2em] text-muted">Pass &amp; play chess</p>
-          </div>
-        </header>
-
-        {/* Main Content Layout */}
         <main className="w-full flex flex-col md:flex-row items-center md:items-start justify-center gap-6">
-          {/* Left Column: Turn Indicator + Board */}
           <div className="flex w-full md:w-auto flex-col items-center gap-3">
             <TurnIndicator turn={game.turn} status={game.status} boardTheme={settings.boardTheme} />
+            {settings.mode === 'ai' && !game.status.isGameOver && (
+              <p className="text-xs text-muted -mt-1">
+                {aiTurnActive
+                  ? ai.thinking
+                    ? 'AetherPawn is thinking…'
+                    : 'Waiting on the engine…'
+                  : `You're playing ${settings.humanColor === 'w' ? 'White' : 'Black'}`}
+                {ai.engineError && <span className="text-red-400"> — {ai.engineError}</span>}
+              </p>
+            )}
             <Board
               game={game}
               boardTheme={settings.boardTheme}
               pieceStyle={settings.pieceStyle}
-              boardOrientation={settings.boardOrientation}
+              boardOrientation={effectiveOrientation}
+              disabled={aiTurnActive}
             />
           </div>
 
-          {/* Right Column: Game Sidebar */}
           <div className="w-full max-w-[400px]">
             <Sidebar
               game={game}
@@ -87,10 +119,19 @@ export default function App() {
               onNewGame={handleNewGame}
               onTimeUp={handleTimeUp}
               clockResetSignal={clockResetSignal}
+              aiTurnActive={aiTurnActive}
             />
           </div>
         </main>
       </div>
+
+      <SideDrawer
+        open={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+        settings={settings}
+        onSettingsChange={updateSettings}
+        onModeChange={handleModeChange}
+      />
 
       <PromotionModal
         pending={game.pendingPromotion}

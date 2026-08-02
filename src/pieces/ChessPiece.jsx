@@ -85,27 +85,36 @@ export default function ChessPiece({ type, color, styleId = 'glossy', size = 56 
       viewBox={VIEWBOX}
       width={size}
       height={size}
-      style={{ filter: glossy ? `drop-shadow(0 3px 3px rgba(0,0,0,0.45))` : 'none' }}
+      style={{ filter: glossy ? `drop-shadow(0 4px 4px rgba(0,0,0,0.55))` : 'none' }}
     >
       <defs>
         {glossy && isWhite && (
           <linearGradient id={gradId} x1="0%" y1="0%" x2="0%" y2="100%">
             <stop offset="0%" stopColor="#ffffff" />
-            <stop offset="55%" stopColor="#e3ddce" />
-            <stop offset="100%" stopColor="#b9ac86" />
+            <stop offset="35%" stopColor="#f2ede0" />
+            <stop offset="70%" stopColor="#d8cba3" />
+            <stop offset="100%" stopColor="#a8996b" />
           </linearGradient>
         )}
         {glossy && !isWhite && (
           <linearGradient id={gradId} x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#565c6b" />
-            <stop offset="55%" stopColor="#2b2f3a" />
-            <stop offset="100%" stopColor="#111318" />
+            <stop offset="0%" stopColor="#6b7180" />
+            <stop offset="35%" stopColor="#3a3f4c" />
+            <stop offset="70%" stopColor="#1c1f27" />
+            <stop offset="100%" stopColor="#08090b" />
           </linearGradient>
         )}
         <radialGradient id={shadowId} cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="rgba(0,0,0,0.35)" />
+          <stop offset="0%" stopColor="rgba(0,0,0,0.4)" />
           <stop offset="100%" stopColor="rgba(0,0,0,0)" />
         </radialGradient>
+        {glossy && (
+          <radialGradient id={`spec-${uid}`} cx="35%" cy="18%" r="45%">
+            <stop offset="0%" stopColor={isWhite ? 'rgba(255,255,255,0.85)' : 'rgba(255,255,255,0.35)'} />
+            <stop offset="100%" stopColor="rgba(255,255,255,0)" />
+          </radialGradient>
+        )}
+        <clipPath id={`clip-${uid}`}>{SHAPES[type]}</clipPath>
       </defs>
 
       <ellipse cx="50" cy="90" rx="26" ry="5" fill={`url(#${shadowId})`} />
@@ -113,6 +122,11 @@ export default function ChessPiece({ type, color, styleId = 'glossy', size = 56 
       <g fill={fill} stroke={stroke} strokeWidth={strokeWidth} strokeLinejoin="round">
         {SHAPES[type]}
       </g>
+      {glossy && (
+        <g clipPath={`url(#clip-${uid})`} style={{ pointerEvents: 'none' }}>
+          <ellipse cx="42" cy="22" rx="16" ry="10" fill={`url(#spec-${uid})`} />
+        </g>
+      )}
     </svg>
   );
 }

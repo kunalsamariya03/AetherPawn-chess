@@ -1,0 +1,20 @@
+{
+  "name": "AetherPawn Chess",
+  "short_name": "AetherPawn",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "icons": [
+    {
+      "src": "/Favicon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/Favicon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

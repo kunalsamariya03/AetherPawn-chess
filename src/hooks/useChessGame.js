@@ -7,7 +7,53 @@ const PIECE_VALUE = { p: 1, n: 3, b: 3, r: 5, q: 9, k: 0 };
 
 const initialHistory = [{ fen: START_FEN, move: null }];
 
-// Synthesizer helper for sound effects (Zero external files/packages needed)
+// Helper: Calculate squares forming attack rays against the King on Checkmate
+function getCheckmateAttackPaths(chess, kingSquare, kingColor) {
+  const attackSquares = new Set();
+  const board = chess.board();
+  const attackerColor = kingColor === 'w' ? 'b' : 'w';
+
+  // 1. Find all enemy pieces currently giving check
+  const kFile = kingSquare.charCodeAt(0) - 97;
+  const kRank = 8 - parseInt(kingSquare[1], 10);
+
+  for (let r = 0; r < 8; r++) {
+    for (let c = 0; c < 8; c++) {
+      const piece = board[r][c];
+      if (piece && piece.color === attackerColor) {
+        const fromSquare = `${String.fromCharCode(97 + c)}${8 - r}`;
+        
+        // Check if this piece attacks the king
+        const moves = chess.moves({ square: fromSquare, verbose: true });
+        const attacksKing = moves.some((m) => m.to === kingSquare);
+
+        if (attacksKing) {
+          attackSquares.add(fromSquare);
+
+          // If sliding piece (Queen, Rook, Bishop), highlight the entire ray path to King
+          if (['q', 'r', 'b'].includes(piece.type)) {
+            const dc = Math.sign(kFile - c);
+            const dr = Math.sign(kRank - r);
+
+            let currR = r + dr;
+            let currC = c + dc;
+
+            while (currR !== kRank || currC !== kFile) {
+              const raySquare = `${String.fromCharCode(97 + currC)}${8 - currR}`;
+              attackSquares.add(raySquare);
+              currR += dr;
+              currC += dc;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  return Array.from(attackSquares);
+}
+
+// Synthesizer helper for sound effects
 function playSoundEffect(type) {
   try {
     const AudioCtx = window.AudioContext || window.webkitAudioContext;
@@ -15,7 +61,6 @@ function playSoundEffect(type) {
     const ctx = new AudioCtx();
 
     if (type === 'capture') {
-      // Deep dramatic capture tone
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
       osc.type = 'sawtooth';
@@ -28,7 +73,6 @@ function playSoundEffect(type) {
       osc.start();
       osc.stop(ctx.currentTime + 0.25);
     } else if (type === 'check') {
-      // High alert check tone
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
       osc.type = 'sine';
@@ -41,7 +85,6 @@ function playSoundEffect(type) {
       osc.start();
       osc.stop(ctx.currentTime + 0.3);
     } else {
-      // Standard move click
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
       osc.type = 'triangle';
@@ -54,11 +97,11 @@ function playSoundEffect(type) {
       osc.stop(ctx.currentTime + 0.08);
     }
   } catch {
-    // Fail silently if audio context is blocked
+    // Audio context blocked fallback
   }
 }
 
-export function useChessGame() {
+export function useChessGame({ soundEnabled = true } = {}) {
   const [saved, setSaved] = useLocalStorage('chess-ledger:game', {
     history: initialHistory,
     pointer: 0,
@@ -86,7 +129,9 @@ export function useChessGame() {
     const isGameOver = chess.isGameOver();
 
     let checkSquare = null;
-    if (isCheck) {
+    let attackPaths = [];
+
+    if (isCheck || isCheckmate) {
       for (const row of chess.board()) {
         for (const sq of row) {
           if (sq && sq.type === 'k' && sq.color === turn) {
@@ -96,6 +141,11 @@ export function useChessGame() {
       }
     }
 
+    // Extract multi-directional attack vectors if checkmate happens
+    if (isCheckmate && checkSquare) {
+      attackPaths = getCheckmateAttackPaths(chess, checkSquare, turn);
+    }
+
     return {
       isCheck,
       isCheckmate,
@@ -103,6 +153,7 @@ export function useChessGame() {
       isDraw,
       isGameOver,
       checkSquare,
+      attackPaths, // Array of squares giving checkmate
       winner: isCheckmate ? (turn === 'w' ? 'b' : 'w') : null,
     };
   }, [chess, turn]);
@@ -144,13 +195,14 @@ export function useChessGame() {
       }
       if (!result) return false;
 
-      // Play Sound effects
-      if (trial.isCheck()) {
-        playSoundEffect('check');
-      } else if (result.captured) {
-        playSoundEffect('capture');
-      } else {
-        playSoundEffect('move');
+      if (soundEnabled) {
+        if (trial.isCheck()) {
+          playSoundEffect('check');
+        } else if (result.captured) {
+          playSoundEffect('capture');
+        } else {
+          playSoundEffect('move');
+        }
       }
 
       const nextEntry = { fen: trial.fen(), move: result };
@@ -160,7 +212,7 @@ export function useChessGame() {
       setPendingPromotion(null);
       return true;
     },
-    [history, pointer, setSaved]
+    [history, pointer, setSaved, soundEnabled]
   );
 
   const attemptMove = useCallback(
@@ -200,6 +252,14 @@ export function useChessGame() {
   );
 
   const cancelPromotion = useCallback(() => setPendingPromotion(null), []);
+
+  const applyEngineMove = useCallback(
+    (from, to, promotion) => {
+      if (!atTip) return false;
+      return commitMove(from, to, promotion);
+    },
+    [atTip, commitMove]
+  );
 
   const selectSquare = useCallback(
     (square) => {
@@ -267,6 +327,7 @@ export function useChessGame() {
     selectSquare,
     resolvePromotion,
     cancelPromotion,
+    applyEngineMove,
     undo,
     redo,
     jumpTo,

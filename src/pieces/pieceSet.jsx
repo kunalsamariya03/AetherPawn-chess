@@ -16,7 +16,7 @@ export function buildCustomPieces(pieceStyleId) {
             type={type}
             color={color}
             styleId={pieceStyleId}
-            size={squareWidth * 0.82}
+            size={squareWidth * 0.88}
           />
         </div>
       );

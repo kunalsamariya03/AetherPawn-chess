@@ -3,22 +3,109 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    
-    <title>AetherPawn — Aesthetic Pass &amp; Play Chess</title>
-    <meta name="description" content="A modern, aesthetic, and fast local 2-player chess game with glassmorphic UI, custom SVG pieces, and move history." />
-    <meta name="keywords" content="AetherPawn, AetherPawn chess, online chess, pass and play chess, glassmorphism chess app" />
 
-    <meta name="google-site-verification" content="yq0Sxrr6DyU74FQRlatOB8fTMNKKJLeog7wQfJzbRtI" />
+    <!-- Primary SEO -->
+    <title>AetherPawn | Play Chess Online Free | Chess vs AI & Local Multiplayer</title>
 
+    <meta
+      name="description"
+      content="Play chess online free with AetherPawn. Challenge a powerful AI with adjustable difficulty or enjoy local 2-player matches. Practice chess openings, tactics, endgames and improve your skills with a fast, modern, glassmorphic chess experience."
+    />
+
+    <meta
+      name="keywords"
+      content="AetherPawn, AetherPawn Chess, chess, play chess online, free chess, online chess, chess game, chess AI, chess vs computer, chess bot, chess engine, local multiplayer chess, 2 player chess, pass and play chess, browser chess, chess practice, chess puzzles, chess openings, chess tactics, chess strategy, chess endgame, chess board, chess trainer, chess app, glassmorphism chess, no login chess, no login games"
+    />
+
+    <meta name="robots" content="index, follow" />
+    <meta name="author" content="AetherPawn" />
+    <meta name="application-name" content="AetherPawn" />
+    <meta name="theme-color" content="#0f172a" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+
+    <!-- Canonical -->
+    <link rel="canonical" href="https://aetherpawn-chess.vercel.app/" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="AetherPawn" />
+    <meta property="og:title" content="Play Chess Online Free | AetherPawn Chess" />
+    <meta
+      property="og:description"
+      content="Play free chess online against AI or with friends locally. Enjoy smooth gameplay, beautiful glassmorphic design, adjustable AI difficulty and instant browser access."
+    />
+    <meta property="og:url" content="https://aetherpawn-chess.vercel.app/" />
+    <meta
+      property="og:image"
+      content="https://aetherpawn-chess.vercel.app/Favicon.png"
+    />
+    <meta property="og:locale" content="en_US" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta
+      name="twitter:title"
+      content="Play Chess Online Free | AetherPawn Chess"
+    />
+    <meta
+      name="twitter:description"
+      content="Free browser chess with AI, local multiplayer, modern UI and no login. Improve your chess skills with AetherPawn."
+    />
+    <meta
+      name="twitter:image"
+      content="https://aetherpawn-chess.vercel.app/Favicon.png"
+    />
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebSite",
+            "name": "AetherPawn",
+            "alternateName": "AetherPawn Chess",
+            "url": "https://aetherpawn-chess.vercel.app/",
+            "description": "Play chess online free against AI or locally with friends using AetherPawn."
+          },
+          {
+            "@type": "WebApplication",
+            "name": "AetherPawn",
+            "applicationCategory": "GameApplication",
+            "operatingSystem": "Web",
+            "url": "https://aetherpawn-chess.vercel.app/",
+            "description": "A free browser chess game with AI opponents, local multiplayer, beautiful glassmorphic design and no login required.",
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "USD"
+            }
+          }
+        ]
+      }
+    </script>
+
+    <!-- Google Search Console -->
+    <meta
+      name="google-site-verification"
+      content="yq0Sxrr6DyU74FQRlatOB8fTMNKKJLeog7wQfJzbRtI"
+    />
+
+    <!-- Icons -->
     <link rel="icon" type="image/png" href="/Favicon.png" />
+    <link rel="apple-touch-icon" href="/Favicon.png" />
 
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
     <link
       href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
       rel="stylesheet"
     />
   </head>
+
   <body class="bg-ink-900">
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
