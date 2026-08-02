@@ -53,23 +53,22 @@ export const BOARD_THEMES = {
     accentText: 'text-brass-400',
     accentRing: 'ring-brass-500/40',
   },
-  // 👇 NEON HATA DIYA, YAHAN GOLD/SILVER THEME AAGAYI 👇
-  luxuryGold: {
-    id: 'luxuryGold',
-    label: 'Royal Gold & Silver',
-    blurb: 'Luxurious metallic finish with gold accents',
-    // Gold gradient frame with a subtle metallic shine
-    frameClass: 'bg-gradient-to-br from-[#bf953f] via-[#fcf6ba] to-[#b38728] border-2 border-[#fbf5b7] shadow-2xl shadow-yellow-600/30 rounded-2xl p-1 md:p-4',
+  // 👇 GREEN & WHITE CLASSIC COMBO THEME 👇
+  emeraldWhite: {
+    id: 'emeraldWhite',
+    label: 'Emerald & White',
+    blurb: 'Classic tournament green and soft white',
+    frameClass:
+      'bg-gradient-to-br from-emerald-900 via-teal-950 to-slate-900 border-2 border-emerald-500/30 shadow-2xl shadow-emerald-950/50 rounded-2xl p-1 md:p-4',
     boardStyle: {
       borderRadius: '10px',
-      boxShadow: 'inset 0 0 20px rgba(0,0,0,0.4), 0 5px 15px rgba(179,135,40,0.2)',
+      boxShadow: 'inset 0 0 20px rgba(0,0,0,0.4), 0 5px 15px rgba(16,185,129,0.15)',
     },
-    // light: Shiny Silver | dark: Rich Brushed Gold
-    lightSquareStyle: { backgroundColor: '#e2e4e6' }, 
-    darkSquareStyle: { backgroundColor: '#c5a059' }, 
-    accentGlow: 'shadow-[0_0_24px_-2px_rgba(218,165,32,0.7)]',
-    accentText: 'text-yellow-600',
-    accentRing: 'ring-yellow-500/60',
+    lightSquareStyle: { backgroundColor: '#eeeed2' }, 
+    darkSquareStyle: { backgroundColor: '#769656' }, 
+    accentGlow: 'shadow-[0_0_24px_-2px_rgba(16,185,129,0.6)]',
+    accentText: 'text-emerald-400',
+    accentRing: 'ring-emerald-500/60',
   },
 };
 
@@ -87,7 +86,7 @@ export const PIECE_STYLES = {
 };
 
 export const DEFAULT_SETTINGS = {
-  boardTheme: 'luxuryGold', // Maine by default isko Gold par set kar diya hai!
+  boardTheme: 'wood', // Default ab 'wood' set ho gaya hai!
   pieceStyle: 'glossy',
   boardOrientation: 'white',
   clockEnabled: false,
